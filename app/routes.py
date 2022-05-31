@@ -1,7 +1,7 @@
 from app import app
+from flask import render_template, redirect, url_for
 import requests
 import json
-from flask import render_template, redirect, url_for
 from bs4 import BeautifulSoup
 import os
 import pandas as pd
@@ -32,9 +32,10 @@ selectors = {
 }
 
 @app.route('/')
+@app.route('/index')
 @app.route('/index/<name>')
-def index(name='Hello, world!'):
-    return render_template('index.html.jinja', text=name)
+def index(name="Hello World"):
+    return render_template("index.html.jinja", text=name)
 
 @app.route('/extract/<product_id>')
 def extract(product_id):
@@ -45,30 +46,24 @@ def extract(product_id):
         page = BeautifulSoup(response.text, 'html.parser')
         opinions = page.select("div.js_product-review")
         for opinion in opinions:
-            
             single_opinion = {
-                key: get_item(opinion, *value)
+                key:get_item(opinion, *value)
                     for key, value in selectors.items()
             }
             single_opinion["opinion_id"] = opinion["data-entry-id"]
             all_opinions.append(single_opinion)
-
         try:    
-            url = "https://www.ceneo.pl"+get_item(page, "a.pagination__next", "href")
+            url = "https://www.ceneo.pl"+get_item(page,"a.pagination__next","href")
         except TypeError:
             url = None
-
-    with open(f"opinions/{product_id}.json", "w", encoding="UTF-8") as jf:
-        json.dump(all_opinions, jf, indent=4, ensure_ascii=False)
-    return redirect(url_for("product", product_id=product_id))
-
-
+        with open(f"app/opinions/{product_id}.json", "w", encoding="UTF-8") as jf:
+            json.dump(all_opinions, jf, indent=4, ensure_ascii=False)
+        return redirect(url_for("product", product_id=product_id))
 
 @app.route('/products')
 def products():
-    products = [filename.split(".")[0] for filename in os.listdir("app/opinions")] 
-    return render_template('products.html.jinja', products=products)
-
+    products = [filename.split(".")[0] for filename in os.listdir("app/opinions")]
+    return render_template("products.html.jinja", products=products)
 
 @app.route('/author')
 def author():
@@ -76,15 +71,14 @@ def author():
 
 @app.route('/product/<product_id>')
 def product(product_id):
-    opinions = pd.read_json(f"opinions/{product_id}.json")
+    opinions = pd.read_json(f"app/opinions/{product_id}.json")
     opinions.stars = opinions.stars.map(lambda x: float(x.split("/")[0].replace(",", ".")))
     stats = {
         "opinions_count": len(opinions.index),
         "pros_count": opinions.pros.map(bool).sum(),
         "cons_count": opinions.cons.map(bool).sum(),
-       "average_score": opinions.stars.mean().round(2),
+        "average_score": opinions.stars.mean().round(2)
     }
-
     recommendation = opinions.recommendation.value_counts(dropna = False).sort_index().reindex(["Nie polecam", "Polecam", None])
     recommendation.plot.pie(
         label="", 
@@ -93,7 +87,7 @@ def product(product_id):
         labels=["Nie polecam", "Polecam", "Nie mam zdania"]
     )
     plt.title("Rekomendacja")
-    plt.savefig(f"plots/{product_id}_recommendations.png")
+    plt.savefig(f"app/static/plots/{product_id}_recommendations.png")
     plt.close()
 
     stars = opinions.stars.value_counts().sort_index().reindex(list(np.arange(0,5.5,0.5)), fill_value=0)
@@ -105,5 +99,5 @@ def product(product_id):
     plt.xticks(rotation=0)
     plt.savefig(f"app/static/plots/{product_id}_stars.png")
     plt.close()
-    return render_template('products.html.jinja', stats=stats, product_id=product_id, opinions=opinions)
+    return render_template("product.html.jinja", stats=stats, product_id=product_id, opinions=opinions)
 
