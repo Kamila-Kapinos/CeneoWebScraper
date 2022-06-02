@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
+plt.switch_backend('Agg') 
+
 def get_item(ancestor, selector, attribute=None, return_list=False):
     try:
         if return_list:
@@ -74,16 +76,16 @@ def product(product_id):
     opinions = pd.read_json(f"app/opinions/{product_id}.json")
     opinions.stars = opinions.stars.map(lambda x: float(x.split("/")[0].replace(",", ".")))
     stats = {
-        "opinions_count": len(opinions.index),
-        "pros_count": opinions.pros.map(bool).sum(),
-        "cons_count": opinions.cons.map(bool).sum(),
-        "average_score": opinions.stars.mean().round(2)
+        "Liczba opinii": len(opinions.index),
+        "Liczba zalet": opinions.pros.map(bool).sum(),
+        "Liczba wad": opinions.cons.map(bool).sum(),
+        "Średni wynik": opinions.stars.mean().round(2)
     }
     recommendation = opinions.recommendation.value_counts(dropna = False).sort_index().reindex(["Nie polecam", "Polecam", None])
     recommendation.plot.pie(
         label="", 
         autopct="%1.1f%%", 
-        colors=["crimson", "forestgreen", "lightskyblue"],
+        colors=["lightsalmon", "lightgreen", "lightskyblue"],
         labels=["Nie polecam", "Polecam", "Nie mam zdania"]
     )
     plt.title("Rekomendacja")
@@ -91,7 +93,9 @@ def product(product_id):
     plt.close()
 
     stars = opinions.stars.value_counts().sort_index().reindex(list(np.arange(0,5.5,0.5)), fill_value=0)
-    stars.plot.bar()
+    stars.plot.bar(
+        color=["thistle"]
+    )
     plt.title("Oceny produktu")
     plt.xlabel("Liczba gwiazdek")
     plt.ylabel("Liczba opinii")
