@@ -4,8 +4,8 @@
     <ul class="list-group">
         {% for product in products %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a class="nav-link" href="{{url_for('extract', product_id=128497685)}}">{{product}}</a>
-                    <span class="badge bg-primary rounded-pill">{{loop.index}}</span>
+                <a class="nav-link" href="{{url_for('product', product_id=product)}}">{{product}}</a>
+                <span class="badge bg-primary rounded-pill">{{loop.index}}</span>
             </li>
         {% endfor %}
     </ul>
