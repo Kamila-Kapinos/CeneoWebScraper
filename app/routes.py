@@ -8,7 +8,8 @@ import os
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
-
+from app.models.product import Product 
+# posprzątam tu
 plt.switch_backend('Agg') 
 
 def get_item(ancestor, selector, attribute=None, return_list=False):
@@ -21,18 +22,7 @@ def get_item(ancestor, selector, attribute=None, return_list=False):
     except (AttributeError, TypeError):
         return None
 
-selectors = {
-    "author": ["span.user-post__author-name"],
-    "recommendation": ["span.user-post__author-recomendation > em"],
-    "stars": ["span.user-post__score-count"],
-    "content": ["div.user-post__text"],
-    "useful": ["button.vote-yes > span"],
-    "useless": ["button.vote-no > span"],
-    "publish_date": ["span.user-post__published > time:nth-child(1)", "datetime"],
-    "purchase_date": ["span.user-post__published > time:nth-child(2)", "datetime"],
-    "pros": ["div[class$=positives]~ div.review-feature__item", None, True],
-    "cons": ["div[class$=negatives]~ div.review-feature__item", None, True]
-}
+
 
 @app.route('/')
 def index():
@@ -42,6 +32,8 @@ def index():
 def extract():
     if request.method == 'POST':
         product_id = request.form.get('product_id')
+        product = Product(product_id)
+        product.extract_product()
         url = f"https://www.ceneo.pl/{product_id}#tab=reviews"
         all_opinions = []
         while(url):
