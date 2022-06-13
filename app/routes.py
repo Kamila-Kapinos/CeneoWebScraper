@@ -1,4 +1,3 @@
-from crypt import methods
 from app import app
 from flask import render_template, redirect, url_for, request
 import requests
@@ -8,9 +7,11 @@ import os
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
-from app.models.product import Product 
+from app.models.product import Product
 
-plt.switch_backend('Agg') 
+
+
+
 
 @app.route('/')
 def index():
@@ -23,14 +24,14 @@ def extract():
         product = Product(product_id)
         product.extract_product()
         
+        
         return redirect(url_for("product", product_id=product_id))
     else:
         return render_template("extract.html.jinja")
 
 @app.route('/products')
 def products():
-    product_id = request.form.get("product_id")
-    opinions = Product.save_opinions(product_id)
+    products = [filename.split(".")[0] for filename in os.listdir("app/opinions")]
     return render_template("products.html.jinja", products=products)
 
 @app.route('/author')
@@ -38,13 +39,10 @@ def author():
     return render_template("author.html.jinja")
 
 @app.route('/product/<product_id>')
-def product():
-    product_name = request.form.get("product_name")
-    product_name = Product(product_name)
-    # opinions = pd.read_json(f"app/opinions/{product_name}.json")
-    # opinions.stars = opinions.stars.map(lambda x: float(x.split("/")[0].replace(",", ".")))
-    product_name.process_stats()
-
+def product(product_id):
+    opinions = pd.read_json(f"app/opinions/{product_id}.json")
+    opinions.stars = opinions.stars.map(lambda x: float(x.split("/")[0].replace(",", ".")))
+    
     recommendation = opinions.recommendation.value_counts(dropna = False).sort_index().reindex(["Nie polecam", "Polecam", None])
     recommendation.plot.pie(
         label="", 
