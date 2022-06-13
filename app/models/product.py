@@ -25,7 +25,7 @@ class Product:
     def __repr__(self):
         return f"Our Product's data: {self.product_id}, {self.product_name}, {self.opinions}, {self.opinions_count}, {self.pros_count}, {self.cons_count}, {self.average_score}"
 
-    def to_dict(self, product_id=0, opinions=[], product_name="", opinions_count=0, pros_count=0, cons_count=0, average_score=0):
+    def to_dict(self):
         product_data = {
             "product_id": self.product_id,
             "product_name": self.product_name,
