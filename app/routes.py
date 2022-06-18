@@ -35,4 +35,5 @@ def product(product_id):
     product.read_from_json()
     opinions = product.opinions_to_df()
     stats = product.stats_to_dict()
-    return render_template("product.html.jinja", stats=stats, product_id=product_id, opinions=opinions)
+    stats_labels = product.stats_labels()
+    return render_template("product.html.jinja", stats=stats, product_id=product_id, opinions=opinions, stats_labels=stats_labels)

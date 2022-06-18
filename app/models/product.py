@@ -54,6 +54,15 @@ class Product:
             "cons_count": self.cons_count,
             "average_score": self.average_score
         }
+    def stats_labels(self):
+            return {
+            "product_id": "ID Produktu",
+            "product_name": "Nazwa Produktu",
+            "opinions_count": "Liczba Opinii",
+            "pros_count": "Liczba Zalet",
+            "cons_count": "Liczba Wad",
+            "average_score": "Średnia liczba gwiazdek"
+        }
     
     def opinions_to_dict(self):
         return [opinion.to_dict() for opinion in self.opinions]
@@ -88,6 +97,7 @@ class Product:
         return self
 
     def draw_charts(self): 
+        
         recommendation = self.opinions_to_df().recommendation.value_counts(dropna = False).sort_index().reindex(["Nie polecam", "Polecam", None])
         recommendation.plot.pie(
             label="", 
