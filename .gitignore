@@ -134,3 +134,4 @@ dmypy.json
 app/opinions/*.*
 app/static/plots/*.*
 app/products/*.*
+.DS_Store
