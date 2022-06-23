@@ -2,7 +2,7 @@ from app.utils import get_item
 from app.parameters import selectors
 
 class Opinion:
-    def __init__(self, author="", recommendation=None, stars=0, content="", useful=0, useless=0, publish_date=None, purchase_date=None, pros=[], cons=[], opinion_id=""):
+    def __init__(self, author="", recommendation=None, stars=0, content="", useful=0, useless=0, publish_date=None, purchase_date=None, pros=None, cons=None, opinion_id=""):
         self.author = author
         self.recommendation = recommendation
         self.stars = stars
@@ -11,8 +11,14 @@ class Opinion:
         self.useless = useless
         self.publish_date = publish_date
         self.purchase_date = purchase_date
-        self.pros = pros
-        self.cons = cons
+        if pros:
+            self.pros = pros
+        else:
+            self.pros = []
+        if cons:
+            self.cons = cons
+        else:
+            self.cons = []
         self.opinion_id = opinion_id
     
     def __str__(self):

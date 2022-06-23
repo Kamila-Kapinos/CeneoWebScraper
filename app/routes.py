@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, redirect, url_for, request
 import os
 from app.models.product import Product
+from app.services.ProductsService import ProductsService
 
 @app.route('/')
 def index():
@@ -12,17 +13,24 @@ def extract():
     if request.method == "POST":
         product_id = request.form.get("product_id")
         if product_id != '':
-            product = Product(product_id)
-            product.extract_product().process_stats().draw_charts()
-            product.save_opinions()
-            product.save_stats()
+            try:    
+                product = Product(product_id)
+                product.extract_product().process_stats().draw_charts()
+                product.save_opinions()
+                product.save_stats()
 
-            return redirect(url_for("product", product_id=product_id))
+                return redirect(url_for("product", product_id=product_id))
+
+            except:
+                return render_template("extract.html.jinja", error='Produkt nie istnieje w Ceneo')
+
     return render_template("extract.html.jinja")
 
 @app.route('/products')
 def products():
-    products = [filename.split(".")[0] for filename in os.listdir("app/opinions")]
+    products = ProductsService().get_products()
+    print(products)
+
     return render_template("products.html.jinja", products=products)
 
 @app.route('/author')
@@ -33,7 +41,7 @@ def author():
 def product(product_id): 
 
     product = Product(product_id)
-    product.read_from_json()
+    product.load_product()
     opinions = product.opinions_to_df()
     stats = product.stats_to_dict()
     stats_labels = product.stats_labels()

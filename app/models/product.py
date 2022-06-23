@@ -1,13 +1,11 @@
 import requests
-import os
-import json
 import pandas as pd
-import numpy as np
 from bs4 import BeautifulSoup
+from app.services.OpinionsService import OpinionsService
+from app.services.ProductsService import ProductsService
 from app.utils import get_item
 from app.models.opinion import Opinion
 from matplotlib import pyplot as plt
-from numpyencoder import NumpyEncoder
 
 plt.switch_backend('Agg') 
 
@@ -75,6 +73,14 @@ class Product:
         response = requests.get(url)
         page = BeautifulSoup(response.text, 'html.parser')
         self.product_name = get_item(page, "h1.product-top__product-info__name")
+
+        if not self.product_name:
+            raise Exception("No product exist")
+
+        db_obj = ProductsService().get_product(self.product_id)
+        if not db_obj:
+            ProductsService().add_product(self)
+
         while(url):
             response = requests.get(url)
             page = BeautifulSoup(response.text, 'html.parser')
@@ -89,7 +95,7 @@ class Product:
         return self
     
     def opinions_to_df(self):
-        opinions = pd.read_json(json.dumps([opinion.to_dict() for opinion in self.opinions]))
+        opinions = pd.DataFrame([opinion.to_dict() for opinion in self.opinions])
         if not opinions.empty:
             opinions.stars = opinions.stars.map(lambda x: float(x.split("/")[0].replace(",", ".")))
         return opinions
@@ -126,30 +132,39 @@ class Product:
             plt.savefig(f"app/static/plots/{self.product_id}_stars.png")
             plt.close()
 
-    def save_opinions(self):        
-        if not os.path.exists("app/opinions"):
-            os.makedirs("app/opinions")
-        with open(f"app/opinions/{self.product_id}.json", "w", encoding="UTF-8") as jf:
-            json.dump(self.opinions_to_dict(), jf, indent=4, ensure_ascii=False)
+    def save_opinions(self):
+        if self.product_name:
+            OpinionsService().clear_product_opinions(self.product_id)
+            for opinion in self.opinions:
+                OpinionsService().add_product_opinion(self.product_id, opinion)
     
     def save_stats(self):        
-        if not os.path.exists("app/products"):
-            os.makedirs("app/products")
-        with open(f"app/products/{self.product_id}.json", "w", encoding="UTF-8") as jf:
-            json.dump(self.stats_to_dict(), jf, indent=4,sort_keys=True,
-              separators=(', ', ': '), ensure_ascii=False,
-              cls=NumpyEncoder)
+        if self.product_name:
+            ProductsService().update_product(self)
               
-    def read_from_json(self):
-        with open(f"app/products/{self.product_id}.json", "r", encoding="UTF-8") as jf:
-            product = json.load(jf)
-        self.product_id = product["product_id"]
-        self.product_name = product["product_name"]
+    def load_product(self):
+        product = ProductsService().get_product(self.product_id)
+        self.product_id = product["id"]
+        self.product_name = product["name"]
         self.opinions_count = product["opinions_count"]
         self.pros_count = product["pros_count"]
         self.cons_count = product["cons_count"]
         self.average_score = product["average_score"]
-        with open(f"app/opinions/{self.product_id}.json", "r", encoding="UTF-8") as jf:
-            opinions = json.load(jf)
+
+        opinions = OpinionsService().get_product_opinions(self.product_id)
         for opinion in opinions:
-            self.opinions.append(Opinion(**opinion))
+            print(opinion)
+            pros = self.parseArrayFromString(opinion['pros'])
+            cons = self.parseArrayFromString(opinion['cons'])
+            self.opinions.append(
+                Opinion(opinion['author'], opinion['recommendation'], opinion['stars'], opinion['content'], opinion['useful'], 
+                opinion['useless'], opinion['publish_date'], opinion['purchase_date'], pros, cons, opinion['opinion_id'])
+                )
+
+    def parseArrayFromString(self, str):
+        if str == '[]':
+            return []
+        elif str[0] == '[':
+            return str[2:-2].split("', '")
+        else:
+            return []    
