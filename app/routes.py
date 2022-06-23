@@ -11,14 +11,20 @@ def index():
 def extract():
     if request.method == "POST":
         product_id = request.form.get("product_id")
-        product = Product(product_id)
-        product.extract_product().process_stats().draw_charts()
-        product.save_opinions()
-        product.save_stats()
+        if product_id != '':
+            print('new product', product_id)
+            product = Product(product_id, [], "", 0, 0, 0, 0)
+            product2 = Product(product_id, [], "", 0, 0, 0, 0)
+            product3 = Product(product_id, [], "", 0, 0, 0, 0)
+            print('new product', product_id, len(product.opinions))
+            print('new product', product_id, len(product2.opinions))
+            print('new product', product_id, len(product3.opinions))
+            product.extract_product().process_stats().draw_charts()
+            # product.save_opinions()
+            # product.save_stats()
 
-        return redirect(url_for("product", product_id=product_id))
-    else:
-        return render_template("extract.html.jinja")
+            return redirect(url_for("product", product_id=product_id))
+    return render_template("extract.html.jinja")
 
 @app.route('/products')
 def products():
