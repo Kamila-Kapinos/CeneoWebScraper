@@ -15,14 +15,18 @@
             </ul>
         </div>
         <div class="col-6">
+        {% if not opinions.empty %}
             <img src="/static/plots/{{product_id}}_recommendations.png" class="rounded img-fluid" alt="Recommendation">
+        {% endif %}
         </div>
     </div>
 
+    {% if not opinions.empty %}
     <div class="row">
         <div class="col-12 text-center">
             <img src="/static/plots/{{product_id}}_stars.png" class="rounded img-fluid" alt="Stars">
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
