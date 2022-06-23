@@ -12,17 +12,17 @@ from numpyencoder import NumpyEncoder
 plt.switch_backend('Agg') 
 
 class Product:
-    def __init__(self, product_id=0, opinions=[], product_name="", opinions_count=0, pros_count=0, cons_count=0, average_score=0):
-        
-        print('opinions', len(opinions))
+    def __init__(self, product_id=0, opinions=None, product_name="", opinions_count=0, pros_count=0, cons_count=0, average_score=0):
         self.product_id = product_id
         self.product_name = product_name
-        self.opinions = opinions
+        if opinions: 
+            self.opinions = opinions
+        else:
+            self.opinions = []
         self.opinions_count = opinions_count
         self.pros_count = pros_count
         self.cons_count = cons_count
         self.average_score = average_score
-        print('init prod', len(self.opinions))
     
     def __str__(self):
         return f"""product_id: {self.product_id}<br>
@@ -68,22 +68,11 @@ class Product:
         }
     
     def opinions_to_dict(self):
-        # print('=======')
-        # print(self.opinions)
-        # print('=======')
-        # print([opinion.to_dict() for opinion in self.opinions])
-
         return [opinion.to_dict() for opinion in self.opinions]
 
     def extract_product(self):
-
-        # self.opinions = []
-
         url = f"https://www.ceneo.pl/{self.product_id}#tab=reviews"
         response = requests.get(url)
-        
-        print(url, len(response.text))
-
         page = BeautifulSoup(response.text, 'html.parser')
         self.product_name = get_item(page, "h1.product-top__product-info__name")
         while(url):
@@ -97,7 +86,6 @@ class Product:
             except TypeError:
                 url = None
 
-        print('opinions', len(self.opinions))
         return self
     
     def opinions_to_df(self):
