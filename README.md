@@ -17,7 +17,7 @@ export FLASK_ENV=development
 flask run
 ```
 
-##Used the most important frameworks and libraries
+## Used the most important frameworks and libraries
 1. Flask
 2. Beautiful Soup
 3. mysql-connector
