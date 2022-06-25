@@ -1,5 +1,6 @@
+import flask
 from app import app
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, send_from_directory
 import os
 from app.models.product import Product
 from app.services.ProductsService import ProductsService
@@ -16,12 +17,12 @@ def extract():
             try:    
                 product = Product(product_id)
                 product.extract_product().process_stats().draw_charts()
-                product.save_opinions()
                 product.save_stats()
-
+                product.save_opinions()
                 return redirect(url_for("product", product_id=product_id))
 
-            except:
+            except Exception as e:
+                print('ERROR', e)
                 return render_template("extract.html.jinja", error='Produkt nie istnieje w Ceneo')
 
     return render_template("extract.html.jinja")
@@ -29,8 +30,6 @@ def extract():
 @app.route('/products')
 def products():
     products = ProductsService().get_products()
-    print(products)
-
     return render_template("products.html.jinja", products=products)
 
 @app.route('/author')
@@ -46,3 +45,15 @@ def product(product_id):
     stats = product.stats_to_dict()
     stats_labels = product.stats_labels()
     return render_template("product.html.jinja", stats=stats, product_id=product_id, opinions=opinions, stats_labels=stats_labels)
+
+
+@app.route('/open/<product_id>', methods=['GET'])
+def open(product_id): 
+    # from pathlib import Path
+    # root = Path('.')
+    # folder_path = Path.cwd() / '/app/opinions'
+    # print('folder_path', folder_path)
+    # TODO get full path 
+    folder_path = '/Users/kamilakapinos/dev/CeneoWebScraper/app/opinions'
+    return send_from_directory(folder_path, product_id + '.json', as_attachment=True) 
+

@@ -4,13 +4,16 @@
         <div class="alert alert-danger">{{error}}</div>
     {% endif %}
 
-    <form action="{{url_for('extract')}}" method="POST">
-        <div class="mb-3">
-            <label for="product_id" class="form-label">Kod produktu</label>
-            <input type="text" class="form-control-plaintext" id="product_id" name="product_id" placeholder="Podaj kod produktu z Ceneo.pl">
+    <form class="row g-3" action="{{url_for('extract')}}" method="POST">
+        <div class="col-3">
+            <label for="product_id" class="form-label">Podaj kod produktu z Ceneo.pl</label>
         </div>
-        <div class="mb-3">
-            <input type="submit" class="btn mb-3" style="background-color: #CCE5FF" value="Pobierz">
+         <div class="col-8">
+            <input type="text" class="form-control text-center" id="product_id" name="product_id" placeholder="Kod produktu">
+        </div>
+        <div class="col-auto">
+            <input type="submit" class="btn btn-outline-info" value="Pobierz">
         </div>
     </form>
+
 {% endblock %}

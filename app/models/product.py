@@ -1,3 +1,7 @@
+from __future__ import print_function
+import json
+import os
+from turtle import pen
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -71,7 +75,13 @@ class Product:
     def extract_product(self):
         url = f"https://www.ceneo.pl/{self.product_id}#tab=reviews"
         response = requests.get(url)
+
+        f = open('app/logs/product_' + self.product_id + '.html', "a")
+        f.write(response.text)
+        f.close()
+
         page = BeautifulSoup(response.text, 'html.parser')
+
         self.product_name = get_item(page, "h1.product-top__product-info__name")
 
         if not self.product_name:
@@ -122,7 +132,7 @@ class Product:
             plt.title("Rekomendacja")
             plt.savefig(f"app/static/plots/{self.product_id}_recommendations.png")
             plt.close()
-            stars = df.stars.value_counts().sort_index().reindex([x / 10.0 for x in range(5, 50, 5)], fill_value=0)
+            stars = df.stars.value_counts().sort_index().reindex([x / 10.0 for x in range(5, 51, 5)], fill_value=0)
             stars.plot.bar()
             plt.title("Oceny produktu")
             plt.xlabel("Liczba gwiazdek")
@@ -137,8 +147,14 @@ class Product:
             OpinionsService().clear_product_opinions(self.product_id)
             for opinion in self.opinions:
                 OpinionsService().add_product_opinion(self.product_id, opinion)
+            if not os.path.exists("app/opinions"):
+                os.makedirs("app/opinions")
+            with open(f"app/opinions/{self.product_id}.json", "w", encoding="UTF-8") as jf:
+                json.dump(self.opinions_to_dict(), jf, indent=4, ensure_ascii=False)
+            
     
-    def save_stats(self):        
+    def save_stats(self):
+        print('save_stats', self.product_name)   
         if self.product_name:
             ProductsService().update_product(self)
               

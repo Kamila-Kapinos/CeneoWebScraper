@@ -17,6 +17,7 @@
             <td><a href="{{url_for('product', product_id=product.id)}}">{{product.name}}</a></td>
             <td>{{product.opinions_count}}</td>
             <td>{{product.average_score}}</td>
+            <td><a href="{{url_for('open', product_id=product.id)}}">Pobierz opinie</a></td>
         </tr>
     {% endfor %}
     </tbody>
