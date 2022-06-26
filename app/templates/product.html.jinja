@@ -86,13 +86,13 @@
             }
 
             const columnDefs = [
-                { field: "publish_date", filter: 'agDateColumnFilter', filterParams: filterParams, valueFormatter: dateFormatter, sort: 'desc', sortingOrder: ['desc', 'asc']},
-                { field: "author", filter: 'agTextColumnFilter' },
-                { field: "recommendation", filter: 'agTextColumnFilter' },
-                { field: "stars", filter: 'agNumberColumnFilter'},
-                { field: "useful", filter: 'agNumberColumnFilter'},
-                { field: "useless", filter: 'agNumberColumnFilter'},
-                { field: "content", filter: 'agTextColumnFilter', 
+                { field: "publish_date", headerName: 'Opublikowno',  filter: 'agDateColumnFilter', width: '120px', filterParams: filterParams, valueFormatter: dateFormatter, sort: 'desc', sortingOrder: ['desc', 'asc']},
+                { field: "author", filter: 'agTextColumnFilter', headerName: 'Autor', width: '100px'},
+                { field: "recommendation", filter: 'agTextColumnFilter', headerName: 'Rekomendacja', width: '150px' },
+                { field: "stars", filter: 'agNumberColumnFilter', headerName: 'Gwiadki', width: '150px'},
+                { field: "useful", filter: 'agNumberColumnFilter', headerName: 'Useful', width: '120px'},
+                { field: "useless", filter: 'agNumberColumnFilter', headerName: 'Useless', width: '120px'},
+                { field: "content", filter: 'agTextColumnFilter', headerName: 'Opis',  width: '1000px',
                     tooltipField: 'content',
                     tooltipComponentParams: { color: '#ececec' },
                 },
