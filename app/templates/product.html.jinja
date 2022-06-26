@@ -27,6 +27,112 @@
             <img src="/static/plots/{{product_id}}_stars.png" class="rounded img-fluid" alt="Stars">
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+            <h3>Opinie</h3>
+            <div id="myGrid" style="height: 600px; width:100%;" class="ag-theme-alpine"></div>
+            <script>
+            
+            var filterParams = {
+                comparator: (filterLocalDateAtMidnight, cellValue) => {
+                    if (filterLocalDateAtMidnight.getTime() === cellValue.getTime()) {
+                        return 0;
+                    }
+                    if (cellValue < filterLocalDateAtMidnight) {
+                        return -1;
+                    }
+                    if (cellValue > filterLocalDateAtMidnight) {
+                        return 1;
+                    }
+                },
+                browserDatePicker: true,
+                buttons: ['reset'],
+            };
+
+            function dateFormatter(params) {
+                return '' + params.data.publish_date.toISOString().split('T')[0];
+            }
+
+            class CustomTooltip {
+                init(params) {
+                    const eGui = (this.eGui = document.createElement('div'));
+                    const color = params.color || 'white';
+                    const data = params.api.getDisplayedRowAtIndex(params.rowIndex).data;
+
+                    eGui.classList.add('custom-tooltip');
+                    //@ts-ignore
+                    eGui.style['background-color'] = color;
+
+                    let html = `
+                        <div style="padding:10px;text-aligh: left">
+                            <p>
+                                <span>${data.content}</span>
+                            </p>
+                        `;
+                    if (data.pros && data.pros.length) {
+                        html += `<p>Zalety: ${data.pros.join(', ')}</p>`;
+                    }
+                    if (data.cons && data.pros.length) {
+                        html += `<p>Wady: ${data.cons.join(', ')}</p>`;
+                    }
+                    html += '</div>';
+
+                    eGui.innerHTML = html;
+                }
+
+                getGui() {
+                    return this.eGui;
+                }
+            }
+
+            const columnDefs = [
+                { field: "publish_date", filter: 'agDateColumnFilter', filterParams: filterParams, valueFormatter: dateFormatter, sort: 'desc', sortingOrder: ['desc', 'asc']},
+                { field: "author", filter: 'agTextColumnFilter' },
+                { field: "recommendation", filter: 'agTextColumnFilter' },
+                { field: "stars", filter: 'agNumberColumnFilter'},
+                { field: "useful", filter: 'agNumberColumnFilter'},
+                { field: "useless", filter: 'agNumberColumnFilter'},
+                { field: "content", filter: 'agTextColumnFilter', 
+                    tooltipField: 'content',
+                    tooltipComponentParams: { color: '#ececec' },
+                },
+            ];
+
+        // specify the data
+        const rowData = [];
+
+        // let the grid know which columns and what data to use
+        const gridOptions = {
+            columnDefs: columnDefs,
+            rowData: rowData,
+            defaultColDef: {
+                sortable: true,
+                tooltipComponent: CustomTooltip,
+            },
+            {# tooltipShowDelay: 0,
+            tooltipHideDelay: 000, #}
+        };
+
+        // setup the grid after the page has finished loading
+        document.addEventListener('DOMContentLoaded', () => {
+            const gridDiv = document.querySelector('#myGrid');
+            new agGrid.Grid(gridDiv, gridOptions);
+
+            fetch("/fetchOpinions/{{product_id}}")
+                .then(response => response.json())
+                .then(data => {
+                    // load fetched data into grid
+                    data.forEach(item => {
+                        item.publish_date = new Date(item.publish_date)
+                    });
+                    gridOptions.api.setRowData(data);
+                });
+
+        });
+            </script>
+        </div>
+    </div>
+    
     {% endif %}
 </div>
 {% endblock %}

@@ -1,6 +1,20 @@
 {% extends "base.html.jinja" %}
 {% block content %}
-
-    <p>{{text}}</p>
-
+    <h1 class="important text-center fw-light">Witaj na Ceneo Web Scraper!</h1>
+     <div class="container-fluid">
+        <div class="row align-items-start">
+            <div class="col-3">
+                <div class="content-container position-absolute top-50 start-0">
+                    <img src="static/ceneo.png" class="img-fluid rounded" alt="ceneo">
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="content-container justify-content-center text-justify">
+                        <p class="fw-light">Dzięki tej aplikacji możesz zapoznać się z danymi dowolnych produktów z serwisu ceneo.pl. 
+                             Dane zaprezentowane są w postaci wykresów oraz tabelek. Mamy nadzieję, że dzięki nam Twoje zakupy będą owocne.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 {% endblock %}

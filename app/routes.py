@@ -47,8 +47,8 @@ def product(product_id):
     return render_template("product.html.jinja", stats=stats, product_id=product_id, opinions=opinions, stats_labels=stats_labels)
 
 
-@app.route('/open/<product_id>', methods=['GET'])
-def open(product_id): 
+@app.route('/downloadOpinions/<product_id>', methods=['GET'])
+def downloadOpinions(product_id): 
     # from pathlib import Path
     # root = Path('.')
     # folder_path = Path.cwd() / '/app/opinions'
@@ -56,4 +56,14 @@ def open(product_id):
     # TODO get full path 
     folder_path = '/Users/kamilakapinos/dev/CeneoWebScraper/app/opinions'
     return send_from_directory(folder_path, product_id + '.json', as_attachment=True) 
+
+@app.route('/fetchOpinions/<product_id>', methods=['GET'])
+def fetchOpinions(product_id): 
+    # from pathlib import Path
+    # root = Path('.')
+    # folder_path = Path.cwd() / '/app/opinions'
+    # print('folder_path', folder_path)
+    # TODO get full path 
+    folder_path = '/Users/kamilakapinos/dev/CeneoWebScraper/app/opinions'
+    return send_from_directory(folder_path, product_id + '.json', as_attachment=False) 
 
