@@ -23,3 +23,4 @@ flask run
 3. mysql-connector
 4. pandas
 5. matplotlib
+6. AG Grid
