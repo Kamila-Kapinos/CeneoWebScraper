@@ -129,7 +129,10 @@ dmypy.json
 .pyre/
 # IDE
 .vscode
+.idea
 # project
 app/opinions/*.*
 app/static/plots/*.*
 app/products/*.*
+app/logs/*.*
+.DS_Store

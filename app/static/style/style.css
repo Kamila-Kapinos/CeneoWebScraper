@@ -1,0 +1,21 @@
+a {
+    text-decoration: none;
+}
+.menu-container {
+    padding: 10px;
+    margin: 15px;  
+}
+
+.content-container {
+    padding: 15px;
+    margin: 15px;
+    text-align: justify;
+}
+
+.container-intro{
+    padding: 10px;
+    margin: 15px;
+    margin-top: 10px;
+    height: 50px;
+}
+
