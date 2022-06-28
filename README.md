@@ -5,7 +5,7 @@ Project based on Flask framework. It allows you to extact different products' op
 1. Install Python3
 2. Install Mysql Server
 3. Create database
-4. Import into database `db/ceneo-scaper_.sql`
+4. Import into database `db/ceneo-web-scraper_2022-06-28.sql`
 5. Install dependencies `pip install -r requirements.txt`
 6. Set connection to database: `config/Config.py`
 
@@ -23,4 +23,4 @@ flask run
 3. mysql-connector
 4. pandas
 5. matplotlib
-6. AG Grid
+6. AG Grid (js library)
